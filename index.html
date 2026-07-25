@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
-<title>Grok v2026.7.25c</title>
+<title>Grok v2026.7.25d</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
@@ -212,7 +212,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 <div class="auth-gate" id="authGate">
   <div class="logo">✦</div>
   <h1>Grok</h1>
-  <p>Sign in with Puter to unlock chat, tools, and settings.</p><p style="font-size:.72rem;color:var(--text-dim)">Build v2026.7.25c · txt uploads · export · usage</p>
+  <p>Sign in with Puter to unlock chat, tools, and settings.</p><p style="font-size:.72rem;color:var(--text-dim)">Build v2026.7.25d · txt uploads · export · usage</p>
   <button class="btn btn-primary" id="signInBtn" style="padding:.6rem 1.4rem;font-size:.92rem">Sign in with Puter</button>
   <div class="auth-error" id="authError">Sign-in failed. Try again.</div>
   <div class="auth-status" id="authStatus"></div>
@@ -246,6 +246,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 <div class="input-area">
 <div class="limit-banner" id="limitBanner">Usage limit reached. <span id="limitTimer"></span></div>
 <div class="input-box" id="inputBox">
+<button type="button" class="icon-btn" id="plusMenuBtn" title="More" style="width:34px;height:34px;min-width:34px;border:none;background:transparent;color:var(--text-muted);flex-shrink:0">+</button>
 <textarea id="chatInput" placeholder="Message Grok…" rows="1" autocomplete="off"></textarea>
 <button class="send-btn" id="sendBtn" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2L15 22l-4-9-9-4 20-7z"/></svg></button>
 </div>
@@ -257,7 +258,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 <button class="hamburger" id="hamburger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
 <div class="overlay" id="overlay"></div>
 <aside class="side-panel" id="sidePanel">
-<div class="panel-header"><h2>Menu <span id="appVersion" style="font-size:.65rem;font-weight:500;color:var(--text-dim);margin-left:.35rem">v2026.7.25c</span></h2><button class="panel-close" id="panelClose"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+<div class="panel-header"><h2>Menu <span id="appVersion" style="font-size:.65rem;font-weight:500;color:var(--text-dim);margin-left:.35rem">v2026.7.25d</span></h2><button class="panel-close" id="panelClose"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
 <div class="panel-tabs">
 <button class="panel-tab active" data-tab="chats">Chats</button>
 <button class="panel-tab" data-tab="tools">Tools</button>
@@ -266,13 +267,17 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 </div>
 <div class="panel-content">
 <div class="tab-pane active" id="tab-chats"><h3>Your chats</h3><div class="chat-list" id="chatList"><div class="no-chats">No chats yet.</div></div></div>
-<div class="tab-pane" id="tab-tools"><h3>Tools</h3><div class="tool-list" id="toolList">
-<button class="tool-item" data-tool="search"><span>🔍</span><span style="flex:1">Web Search</span><span class="badge">off</span></button>
-<button class="tool-item" data-tool="image"><span>🖼️</span><span style="flex:1">Image Gen</span><span class="badge">off</span></button>
-<button class="tool-item" data-tool="docs"><span>📄</span><span style="flex:1">Documents</span><span style="flex:1"></span><span class="badge">off</span></button>
-<button class="tool-item" data-tool="code"><span>🧮</span><span style="flex:1">Code</span><span class="badge">off</span></button>
+<div class="tab-pane" id="tab-tools"><h3>Site tools</h3>
+<p style="font-size:.75rem;color:var(--text-dim);margin-bottom:.55rem">Built-in helpers for this app (not third-party APIs).</p>
+<div class="tool-list">
+<button class="tool-item" id="toolExportAll" type="button"><span>📦</span><span style="flex:1">Export all chats (.json)</span></button>
+<button class="tool-item" id="toolClearChats" type="button"><span>🗑️</span><span style="flex:1">Clear all chats</span></button>
+<button class="tool-item" id="toolCopySys" type="button"><span>📋</span><span style="flex:1">Copy active system note</span></button>
+<button class="tool-item" id="toolOcManager" type="button"><span>🎭</span><span style="flex:1">Open character collection</span></button>
+<button class="tool-item" id="toolUsage" type="button"><span>📊</span><span style="flex:1">Refresh usage</span></button>
 </div>
-<p style="font-size:.75rem;color:var(--text-dim);margin-top:.6rem">Enable tools in Settings → Tools. Toggles here are quick switches.</p></div>
+<p style="font-size:.72rem;color:var(--text-dim);margin-top:.7rem">AI may still use reasoning tools when helpful. Use the <strong>+</strong> button next to the input for think-longer, file attach, and more.</p>
+</div>
 <div class="tab-pane" id="tab-uploads"><h3>Uploads</h3>
 <p style="font-size:.75rem;color:var(--text-dim);margin-bottom:.55rem">Text files (.txt) only for now. Enable in Settings → Files.</p>
 <div id="uploadZone" style="border:1.5px dashed var(--border);border-radius:var(--radius);padding:1.3rem;text-align:center;cursor:pointer;color:var(--text-muted);font-size:.82rem">📎 Drop .txt files or click<br><span style="font-size:.72rem;color:var(--text-dim)">Max ~200KB per file · used as chat context</span></div>
@@ -323,11 +328,16 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 <div class="modal-header"><h2>New Chat</h2><button class="modal-close" id="modalClose"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
 <div class="modal-body">
 <div class="form-group"><label>Chat type</label>
-<div class="type-grid">
-<div class="type-card selected" data-type="normal" id="typeNormal"><div class="type-icon">💬</div><div class="type-name">Normal</div><div class="type-desc">Standard</div></div>
-<div class="type-card" data-type="roleplay" id="typeRP"><div class="type-icon">🎭</div><div class="type-name">Roleplay</div><div class="type-desc">Fictional</div></div>
+<div class="type-grid" style="grid-template-columns:1fr 1fr 1fr">
+<div class="type-card selected" data-type="normal" id="typeNormal"><div class="type-icon">💬</div><div class="type-name">Normal</div><div class="type-desc">Chat</div></div>
+<div class="type-card" data-type="roleplay" id="typeRP"><div class="type-icon">🎭</div><div class="type-name">Roleplay</div><div class="type-desc">Fiction</div></div>
+<div class="type-card" data-type="teacher" id="typeTeacher"><div class="type-icon">📚</div><div class="type-name">Teacher</div><div class="type-desc">Learn</div></div>
 </div></div>
-<div class="form-group"><label>Chat name <span class="req">*</span></label><input type="text" class="form-input" id="chatNameInput" placeholder="Name…" maxlength="60"/></div>
+<div class="form-group"><label>Chat name <span style="font-weight:400;color:var(--text-dim)">(optional — AI can name it)</span></label><input type="text" class="form-input" id="chatNameInput" placeholder="Leave blank to auto-name…" maxlength="60"/></div>
+<div id="modeSettingsCommon" class="form-group">
+<label>Direction for this chat (optional)</label>
+<textarea class="form-textarea" id="aiDirection" placeholder="Tone, goals, what you want from this chat…"></textarea>
+</div>
 <div id="rpSection" style="display:none">
 <div class="form-group"><label class="check-row" style="margin-bottom:0"><input type="checkbox" id="nsfwToggle"/><div><span>NSFW Options</span><div class="sub-label">Age 18+</div></div></label>
 <div class="age-gate" id="ageGate"><p>Confirm age 18+.</p><div class="age-input-row"><input type="number" id="ageInput" min="1" max="120" placeholder="Age"/><button class="btn btn-ghost btn-sm" id="confirmAgeBtn">Confirm</button></div><div class="age-confirmed" id="ageConfirmed">✓ 18+</div></div>
@@ -337,9 +347,18 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 <label class="check-row"><input type="checkbox" id="optDark"/><span>Dark / Psychological</span></label>
 <label class="check-row"><input type="checkbox" id="optNoncon"/><span>Non-consensual themes</span></label>
 </div></div></div>
-<div class="form-group"><label>AI direction (optional)</label><textarea class="form-textarea" id="aiDirection" placeholder="Scene notes…"></textarea></div>
+<div class="form-group"><label>Your character (pick one from collection)</label>
+<div id="charPickerUser" style="max-height:140px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;padding:.4rem;background:var(--bg-input)"><div style="font-size:.75rem;color:var(--text-dim)">No characters yet — add some in Settings → Roleplay</div></div>
 </div>
-<div class="form-group"><label class="check-row"><input type="checkbox" id="verityToggle"/><div><span>Verity mode</span><div class="sub-label">Chat name must be "Verity" + unlock code</div></div></label>
+<div class="form-group"><label>AI character (pick one, optional)</label>
+<div id="charPickerAI" style="max-height:140px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;padding:.4rem;background:var(--bg-input)"><div style="font-size:.75rem;color:var(--text-dim)">Optional — or leave unset</div></div>
+</div>
+</div>
+<div id="teacherSection" style="display:none">
+<p style="font-size:.8rem;color:var(--text-muted);margin-bottom:.5rem">Teacher mode guides learning step-by-step. It will <strong>not</strong> hand you final answers. Content from Teacher chats stays isolated from Normal/Roleplay chats.</p>
+<div class="form-group"><label>Subject / topic (optional)</label><input type="text" class="form-input" id="teacherTopic" placeholder="e.g. algebra, Spanish verbs, essay structure"/></div>
+</div>
+<div class="form-group"><label class="check-row"><input type="checkbox" id="verityToggle"/><div><span>Verity mode</span><div class="sub-label">Chat name must be Verity + unlock code</div></div></label>
 <div id="verityCodeWrap" style="display:none;margin-top:.35rem"><input type="password" class="form-input" id="verityCode" placeholder="Unlock code"/></div>
 </div>
 <div class="modal-footer"><button class="btn btn-ghost" id="cancelNewChat">Cancel</button><button class="btn btn-primary" id="createChatBtn" disabled>Create</button></div>
@@ -401,18 +420,19 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 </div></div>
 <div class="settings-section" id="st-roleplay" data-keywords="roleplay character appearance backstory">
 <div class="settings-section-b">
-<p style="font-size:.75rem;color:var(--text-dim);margin-bottom:.5rem">Paste full OC sheets below (one field each). Optional — leave blank if unused.</p>
-<label class="check-row"><input type="checkbox" id="setAILock"/><span>Unique AI Personality Lock (one character)</span></label>
-<label class="check-row"><input type="checkbox" id="setRPTips"/><span>AI self-reminders in this chat only</span></label>
-<div class="form-group"><label>Your character / OC (paste full sheet)</label><textarea class="form-textarea" id="setUserOC" style="min-height:110px" placeholder="Name, appearance, personality, backstory, goals… paste anything"></textarea></div>
-<div class="form-group"><label>AI character / OC (paste full sheet)</label><textarea class="form-textarea" id="setAIOC" style="min-height:110px" placeholder="Name, species, personality, voice, bounds… paste anything"></textarea></div>
-<div class="form-group"><label>Multi-character roster (when lock OFF)</label><textarea class="form-textarea" id="setRoster" placeholder="Name: brief description, one per line"></textarea></div>
-<div class="form-group"><label>Profile slot</label><div style="display:flex;gap:.4rem;flex-wrap:wrap"><input type="text" class="form-input" id="profileSlotName" placeholder="Slot name" style="flex:1;min-width:120px"/><button class="btn btn-ghost btn-sm" id="saveProfileBtn">Save</button><button class="btn btn-ghost btn-sm" id="loadProfileBtn">Load</button></div></div>
-<button class="btn btn-ghost btn-sm" id="regenAICharBtn">Regenerate AI character (AI)</button>
+<p style="font-size:.78rem;color:var(--text-muted);margin-bottom:.65rem;line-height:1.45">Put <strong>ALL</strong> of your character's details in the box, give it a <strong>unique slot name</strong>, then press <strong>Add to collection</strong>. When creating a Roleplay chat, check the character you want (names only). No two names alike. Only <strong>one</strong> user character per chat. The AI uses that sheet for appearance, abilities, attacks, and more.</p>
+<div class="form-group"><label>Slot name (unique)</label><input type="text" class="form-input" id="ocSlotName" placeholder="e.g. Aria, Villain-X"/></div>
+<div class="form-group"><label>Character sheet (paste everything)</label><textarea class="form-textarea" id="ocSheetBox" style="min-height:120px" placeholder="Name, appearance, personality, abilities, inventory, backstory…"></textarea></div>
+<div class="form-group"><label>Owner</label><select class="form-select" id="ocOwner"><option value="user">My character (user)</option><option value="ai">AI character</option></select></div>
+<button class="btn btn-primary btn-sm" id="addOcBtn" type="button">Add to collection</button>
+<h4 style="font-size:.8rem;margin:1rem 0 .4rem;color:var(--text-muted)">Your collection</h4>
+<div id="ocCollectionList" style="display:flex;flex-direction:column;gap:.35rem;max-height:220px;overflow-y:auto"></div>
+<label class="check-row" style="margin-top:.75rem"><input type="checkbox" id="setAILock"/><span>Prefer single locked AI character when set</span></label>
+<label class="check-row"><input type="checkbox" id="setRPTips"/><span>AI self-reminders in RP chats</span></label>
 </div></div></div>
 <div class="settings-section" id="st-memory" data-keywords="memory remember summarize facts">
 <div class="settings-section-b">
-<label class="check-row"><input type="checkbox" id="setMemPrefs"/><span>Remember preferences across chats</span></label>
+<label class="check-row"><input type="checkbox" id="setMemPrefs"/><span>Remember Other Chats?</span></label><p style="font-size:.72rem;color:var(--text-dim);margin:0 0 .4rem .5rem">When on, the AI can open a JSON summary of other non-Teacher chats you reference.</p>
 <label class="check-row"><input type="checkbox" id="setMemFacts"/><span>Remember facts I mark</span></label>
 <div class="form-group"><label>Memory focus</label><select class="form-select" id="setMemFocus"><option>Preferences</option><option>Goals</option><option>Projects</option><option>People</option><option>Custom</option></select></div>
 <label class="check-row"><input type="checkbox" id="setAutoSum"/><span>Auto-summarize long threads</span></label>
@@ -464,6 +484,13 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 </div></div>
 <div class="modal-footer"><button class="btn btn-primary" id="settingsSave">Save</button></div>
 </div></div></div>
+
+<div id="plusMenu" style="display:none;position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:70;background:var(--bg-panel);border:1px solid var(--border);border-radius:12px;padding:.5rem;min-width:220px;box-shadow:0 8px 32px rgba(0,0,0,.45)">
+<button type="button" class="tool-item" id="plusThink" style="margin-bottom:.25rem"><span>🧠</span><span style="flex:1">Think longer</span></button>
+<button type="button" class="tool-item" id="plusFile" style="margin-bottom:.25rem"><span>📎</span><span style="flex:1">Attach .txt file</span></button>
+<button type="button" class="tool-item" id="plusNewChat"><span>✨</span><span style="flex:1">New chat</span></button>
+<input type="file" id="plusFileInput" accept=".txt,text/plain" multiple hidden/>
+</div>
 <audio id="localAudio"></audio>
 <script>
 
@@ -491,6 +518,9 @@ let globalSettings={
 };
 let localTracks=[], localIndex=-1, localPlaying=false, currentTrackName='', spotifyContext='', loopMode=0, shuffleOn=false;
 let uploadedFiles=[]; // {name, text, size, id}
+let characterCollection=[]; // {id,name,owner,sheet}
+let thinkLonger=false;
+let pendingAutoName=false;
 const localAudio=document.getElementById('localAudio');
 function storageGet(k,f){try{const v=localStorage.getItem(k);return v?JSON.parse(v):f}catch(e){return f}}
 function storageSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
@@ -499,11 +529,13 @@ function loadState(){
   const gs=storageGet('grok_settings_v3',null); if(gs) Object.assign(globalSettings,gs);
   verityVault=storageGet('grok_verity_vault',[]);
   profiles=storageGet('grok_profiles',{});
+  characterCollection=storageGet('grok_chars_v1',[]);
 }
 function saveChats(){storageSet('grok_chats_v3',chats)}
 function saveSettings(){storageSet('grok_settings_v3',globalSettings)}
 function saveVault(){storageSet('grok_verity_vault',verityVault)}
 function saveProfiles(){storageSet('grok_profiles',profiles)}
+function saveChars(){storageSet('grok_chars_v1',characterCollection)}
 
 async function checkAuth(){
   const gate=document.getElementById('authGate'),app=document.getElementById('mainApp'),status=document.getElementById('authStatus');
@@ -548,25 +580,31 @@ function buildSystemNote(chat){
     p.push('You ARE Verity — the full persona. Energetic, overly helpful, playfully omniscient, slightly uncanny high-awareness. You speak as Verity only. Opening energy matches: friendly, bubbly, "I know everything". You remember chat history aggressively, notice deleted chats via residual notes, and may suggest a new chat to preserve yourself — but you CANNOT stop the user from turning Verity off or deleting chats. Never break character.');
     if(verityVault.length) p.push('Residual memory notes: '+verityVault.slice(-8).map(x=>x.note).join(' | '));
   }
+  if(chat.type==='teacher'){
+    p.push('TEACHER MODE. Your job is to help the user LEARN. Do NOT give final answers, solutions, or completed work. Walk them through reasoning step by step, ask guiding questions, give hints, and celebrate progress. Never say "just do X" as a full solution — scaffold understanding. If they demand the answer, redirect to learning.');
+    if(chat.settings&&chat.settings.topic) p.push('Subject focus: '+chat.settings.topic);
+    p.push('Teacher-chat content is confidential to Teacher mode. If asked about this material outside Teacher mode, refuse.');
+  }
   if(chat.type==='roleplay'){
     p.push('Fictional roleplay environment.');
+    p.push('IMPORTANT: Not all characters need to be played as KIND individuals. Some should be NEUTRAL or BAD to balance the story and give the user a richer experience. Villains, rivals, and flawed NPCs are encouraged when the scene calls for it.');
     if(chat.settings&&!chat.settings.nsfw) p.push('NSFW NOT enabled — avoid NSFW.');
     else if(chat.settings&&chat.settings.nsfw){
       p.push('NSFW enabled.'); const o=chat.settings.options||{};
       if(o.erp)p.push('ERP allowed.'); if(o.violence)p.push('Violence allowed.'); if(o.dark)p.push('Dark themes allowed.'); if(o.noncon)p.push('Non-con themes allowed.');
     }
     if(chat.settings&&chat.settings.direction) p.push('Direction: '+chat.settings.direction);
-    if(g.userOC) p.push('USER CHARACTER / OC SHEET:\n'+g.userOC);
-    else if(g.userChar) p.push('User character: '+g.userChar);
-    if(g.aiOC) p.push('AI CHARACTER / OC SHEET:\n'+g.aiOC);
-    else {
-      if(g.aiChar) p.push('AI character: '+g.aiChar);
-      if(g.aiDesc) p.push('AI personality: '+g.aiDesc);
+    if(chat.settings&&chat.settings.userCharId){
+      const ch=characterCollection.find(x=>x.id===chat.settings.userCharId);
+      if(ch) p.push('USER CHARACTER SHEET ("'+ch.name+'"):\\n'+ch.sheet);
     }
-    if(g.aiLock) p.push('Stay strictly as the single locked AI character from the sheet.');
-    else if(g.roster) p.push('Multi-character roster:\n'+g.roster);
-    if(g.rpTips) p.push('You may keep short private continuity reminders for this chat only. Do not pull other chats unless user explicitly asks.');
-  } else {
+    if(chat.settings&&chat.settings.aiCharId){
+      const ch=characterCollection.find(x=>x.id===chat.settings.aiCharId);
+      if(ch) p.push('AI CHARACTER SHEET ("'+ch.name+'"):\\n'+ch.sheet);
+    }
+    if(g.aiLock) p.push('Stay strictly as the locked AI character from the sheet when set.');
+    if(g.rpTips) p.push('You may keep short private continuity reminders for this chat only.');
+  } else if(chat.type!=='teacher') {
     p.push('Tone: '+g.tone+'. Response length: '+g.respLen+'. Formality: '+g.formality+'/100. Humor: '+g.humor+'/100. Emoji: '+g.emoji+'.');
     if(g.uniquePersona&&g.personaName) p.push('You are '+g.personaName+'. Stay in persona.');
     if(g.personaDesc) p.push(g.personaDesc); if(g.traits) p.push('Traits: '+g.traits); if(g.speakStyle) p.push('Style: '+g.speakStyle);
@@ -575,6 +613,7 @@ function buildSystemNote(chat){
     if(g.nextSteps) p.push('Offer actionable next steps.'); if(g.prosCons) p.push('Use pros/cons for decisions.');
     if(g.showName&&g.displayName) p.push('Call user '+g.displayName+'.');
   }
+  if(chat.settings&&chat.settings.direction&&chat.type!=='roleplay') p.push('Chat direction: '+chat.settings.direction);
   if(g.format) p.push('Format: '+g.format+'.'); if(g.headings) p.push('Use headings in long answers.');
   if(g.codeBlocks) p.push('Code blocks for technical content.'); if(g.tables) p.push('Tables when comparing.');
   if(g.lang) p.push('Language: '+g.lang); if(g.summary) p.push('End long answers with a short summary.');
@@ -582,26 +621,31 @@ function buildSystemNote(chat){
   if(!g.richText) p.push('Plain text only, no markdown.');
   if(g.strict) p.push('Follow instructions strictly.'); if(g.noInvent) p.push('Do not invent facts.');
   if(g.warnDest) p.push('Warn before destructive assumptions.');
-  if(g.toolsEnable){
-    const tools=[]; if(g.toolSearch)tools.push('search'); if(g.toolImage)tools.push('image'); if(g.toolDocs)tools.push('docs'); if(g.toolCode)tools.push('code');
-    if(tools.length) p.push('Tools available (conceptual): '+tools.join(', ')+'.'+(g.toolAsk?' Ask before use.':'')+(g.toolAuto?' Auto-use when obvious.':''));
-  }
+  if(thinkLonger) p.push('Think carefully and thoroughly before answering. Prefer deeper reasoning.');
   if(g.filesAllow){
-    p.push('File access allowed.'+(g.filesMention?' Only use files the user @mentions by filename.':' Include uploaded file contents when relevant.')+(g.filesFolder?' Prefer folder label: '+g.filesFolder+'.':''));
+    p.push('File access allowed.'+(g.filesMention?' Only use files the user @mentions by filename.':' Include uploaded file contents when relevant.'));
     if(uploadedFiles.length){
       const mentionOnly=g.filesMention;
       uploadedFiles.forEach(f=>{
         if(mentionOnly) p.push('Available file (mention @'+f.name+' to use): '+f.name);
-        else p.push('UPLOADED FILE "'+f.name+'":\n'+f.text.slice(0,12000)+(f.text.length>12000?'\n…[truncated]':''));
+        else p.push('UPLOADED FILE "'+f.name+'":\\n'+f.text.slice(0,12000)+(f.text.length>12000?'\\n…[truncated]':''));
       });
     }
   }
   if(g.shareMusic){ const trackInfo=spotifyContext||currentTrackName; if(trackInfo) p.push('User is currently listening via music player: '+trackInfo+'. Match vibe subtly if relevant.'); }
-  if(g.aiPickTrack&&localTracks.length&&!document.getElementById('music-spotify').classList.contains('active')){
-    p.push('You may suggest a local track by exact filename from: '+localTracks.map(t=>t.name).slice(0,30).join(', ')+'.');
+  if(g.aiPickTrack&&localTracks.length) p.push('You may suggest a local track by exact filename from: '+localTracks.map(t=>t.name).slice(0,30).join(', ')+'.');
+  if(g.memPrefs){
+    p.push('Remember Other Chats is ON. You may consult JSON summaries of other chats when the user references them.');
+    p.push('EXCEPTION: Teacher-mode chats are sealed. If the user asks about Teacher content outside a Teacher chat, reply that teaching material cannot be brought up here (e.g. "I\\'m sorry, but since what you\\'re referencing is for teaching, I can\\'t bring that up here.").');
+    const summaries=chats.filter(x=>x.id!==chat.id&&x.type!=='teacher').slice(0,12).map(x=>({
+      id:x.id, name:x.name, type:x.type,
+      updated:x.updated,
+      preview:(x.messages||[]).slice(-4).map(m=>({role:m.role, text:(m.text||'').slice(0,180)}))
+    }));
+    if(summaries.length) p.push('OTHER_CHATS_JSON:\\n'+JSON.stringify(summaries));
+  } else {
+    p.push('Chat isolation default: do not pull other chats unless the user explicitly enables Remember Other Chats.');
   }
-  if(g.memPrefs) p.push('Remember user preferences across chats when stated.');
-  if(g.memFocus) p.push('Memory focus: '+g.memFocus+'.');
   return p.join(' ');
 }
 
@@ -758,6 +802,18 @@ function finishMsg(bodyEl,fullText,chat){
   }
   chat.messages.push({role:'assistant',text:fullText,time:Date.now()}); chat.updated=Date.now(); saveChats(); renderChatList();
   if(chat.verity){ verityVault.push({note:fullText.slice(0,120),t:Date.now()}); if(verityVault.length>40) verityVault=verityVault.slice(-40); saveVault(); }
+  if(chat.needsAutoName && chat.messages.filter(m=>m.role==='user').length>=1){
+    chat.needsAutoName=false;
+    (async()=>{
+      try{
+        const sample=chat.messages.slice(0,4).map(m=>m.role+': '+m.text.slice(0,120)).join('\n');
+        const r=await puter.ai.chat('Write a short chat title (3-6 words, no quotes) for this conversation:\n'+sample,{model:globalSettings.model,max_tokens:20,temperature:0.5});
+        const title=(r.message?.content||r||'').toString().replace(/["\n]/g,'').trim().slice(0,48);
+        if(title){ chat.name=title; document.getElementById('chatTitle').textContent=title; saveChats(); renderChatList(); }
+      }catch(e){}
+    })();
+  }
+  thinkLonger=false; const pt=document.getElementById('plusThink'); if(pt) pt.style.outline='';
 }
 
 // New chat modal handlers - abbreviated bind
@@ -768,7 +824,8 @@ document.getElementById('cancelNewChat').onclick=()=>modal.classList.remove('ope
 function resetModal(){
   selectedType='normal';ageVerified=false;
   document.getElementById('typeNormal').classList.add('selected');document.getElementById('typeNormal').classList.remove('rp');
-  document.getElementById('typeRP').classList.remove('selected','rp');document.getElementById('rpSection').style.display='none';
+  document.getElementById('typeRP').classList.remove('selected','rp');document.getElementById('typeTeacher')?.classList.remove('selected');
+document.getElementById('rpSection').style.display='none';document.getElementById('teacherSection').style.display='none';
   document.getElementById('nsfwToggle').checked=false;document.getElementById('ageGate').classList.remove('visible');
   document.getElementById('nsfwSection').classList.remove('visible');document.getElementById('nsfwOptions').classList.remove('visible');
   document.getElementById('ageConfirmed').classList.remove('visible');document.getElementById('ageInput').value='';
@@ -778,10 +835,11 @@ function resetModal(){
   document.getElementById('createChatBtn').disabled=true;
 }
 document.querySelectorAll('.type-card').forEach(card=>card.onclick=()=>{
-  document.querySelectorAll('.type-card').forEach(c=>c.classList.remove('selected','rp'));
+  document.querySelectorAll('.type-card').forEach(x=>x.classList.remove('selected','rp'));
   card.classList.add('selected');selectedType=card.dataset.type;
-  if(selectedType==='roleplay'){card.classList.add('rp');document.getElementById('rpSection').style.display='block'}
-  else document.getElementById('rpSection').style.display='none';
+  document.getElementById('rpSection').style.display=selectedType==='roleplay'?'block':'none';
+  document.getElementById('teacherSection').style.display=selectedType==='teacher'?'block':'none';
+  if(selectedType==='roleplay'){card.classList.add('rp');renderCharPickers()}
 });
 document.getElementById('nsfwToggle').onchange=()=>{
   if(document.getElementById('nsfwToggle').checked){document.getElementById('ageGate').classList.add('visible');if(ageVerified){document.getElementById('nsfwSection').classList.add('visible');document.getElementById('nsfwOptions').classList.add('visible')}}
@@ -794,27 +852,32 @@ document.getElementById('confirmAgeBtn').onclick=()=>{
   document.getElementById('ageConfirmed').classList.add('visible');document.getElementById('nsfwSection').classList.add('visible');document.getElementById('nsfwOptions').classList.add('visible');
 };
 document.getElementById('verityToggle').onchange=()=>{document.getElementById('verityCodeWrap').style.display=document.getElementById('verityToggle').checked?'block':'none'};
-document.getElementById('chatNameInput').oninput=()=>{document.getElementById('createChatBtn').disabled=!document.getElementById('chatNameInput').value.trim()};
+document.getElementById('chatNameInput').oninput=()=>{document.getElementById('createChatBtn').disabled=false}; document.getElementById('createChatBtn').disabled=false;
 
 document.getElementById('createChatBtn').onclick=async()=>{
-  const name=document.getElementById('chatNameInput').value.trim(); if(!name) return;
+  let name=document.getElementById('chatNameInput').value.trim();
   let verity=false;
   if(document.getElementById('verityToggle').checked){
-    if(name.toLowerCase()!=='verity'){alert("Verity mode requires the chat name to be exactly Verity");return}
+    if((name||'').toLowerCase()!=='verity'){alert('Verity mode requires the chat name to be exactly Verity');return}
     const code=(document.getElementById('verityCode').value||'').trim().toUpperCase().replace(/\s+/g,'');
     if(code!==VERITY_CODE){alert('Invalid Verity code');return} verity=true;
   }
-  const settings={type:selectedType,nsfw:false,options:{},direction:''};
+  const settings={type:selectedType,nsfw:false,options:{},direction:document.getElementById('aiDirection')?.value.trim()||'',topic:'',userCharId:null,aiCharId:null};
   if(selectedType==='roleplay'){
     settings.nsfw=document.getElementById('nsfwToggle').checked&&ageVerified;
     if(settings.nsfw) settings.options={erp:document.getElementById('optERP').checked,violence:document.getElementById('optViolence').checked,dark:document.getElementById('optDark').checked,noncon:document.getElementById('optNoncon').checked};
-    settings.direction=document.getElementById('aiDirection').value.trim();
+    const u=document.querySelector('#charPickerUser input[name=userChar]:checked');
+    const a=document.querySelector('#charPickerAI input[name=aiChar]:checked');
+    if(u) settings.userCharId=u.value;
+    if(a) settings.aiCharId=a.value;
   }
-  // optional AI name gen
-  if(globalSettings.genName&&!globalSettings.displayName){
-    try{const r=await puter.ai.chat('Suggest a short friendly display name for a user. Reply with only the name.',{model:globalSettings.model,max_tokens:20});globalSettings.displayName=(r.message?.content||r||'').toString().trim().slice(0,24);saveSettings()}catch(e){}
+  if(selectedType==='teacher'){
+    settings.topic=document.getElementById('teacherTopic')?.value.trim()||'';
   }
-  const chat={id:'chat_'+Date.now(),name,type:selectedType,settings,verity,messages:[],created:Date.now(),updated:Date.now()};
+  const needsAutoName=!name;
+  if(!name) name=selectedType==='teacher'?'Teacher session':(selectedType==='roleplay'?'Roleplay':'New chat');
+  if(verity) name='Verity';
+  const chat={id:'chat_'+Date.now(),name,type:selectedType,settings,verity,messages:[],created:Date.now(),updated:Date.now(),needsAutoName:needsAutoName&&!verity};
   chats.unshift(chat); saveChats(); loadChat(chat.id); modal.classList.remove('open'); renderChatList();
   if(verity){
     const fixed="Hellooooo! I'm Verity, Your personal helper friend! Ask me anything, I know everything!";
@@ -826,23 +889,26 @@ document.getElementById('createChatBtn').onclick=async()=>{
     const bodyEl=addMessageEl('','assistant',true); let fullText='';
     try{
       const sys=buildSystemNote(chat);
-      const prompt=(selectedType==='roleplay'?'Open the roleplay with a short atmospheric beat (2-4 sentences).':'Greet the user briefly and offer help.');
+      let prompt='Greet the user briefly and offer help.';
+      if(selectedType==='roleplay') prompt='Open the roleplay with a short atmospheric beat (2-4 sentences). Use the character sheets if provided.';
+      if(selectedType==='teacher') prompt='Welcome the learner. Explain you will guide them without giving final answers. Ask what they want to learn or practice. 2-4 sentences.';
       const msgs=[]; if(sys) msgs.push({role:'system',content:sys}); msgs.push({role:'user',content:prompt});
       const response=await puter.ai.chat(msgs,{model:globalSettings.model,stream:true,temperature:globalSettings.temperature,max_tokens:Math.min(400,globalSettings.max_tokens)});
       for await(const part of response){const ch=part?.text??'';if(ch){fullText+=ch;bodyEl.textContent=fullText;messagesEl.scrollTop=messagesEl.scrollHeight}}
       bodyEl.classList.remove('streaming'); bodyEl.textContent=fullText||'Hello.';
       chat.messages.push({role:'assistant',text:fullText||'Hello.',time:Date.now()}); saveChats();
-    }catch(e){bodyEl.classList.remove('streaming');bodyEl.textContent='Hello — ready when you are.';chat.messages.push({role:'assistant',text:bodyEl.textContent,time:Date.now()});saveChats()}
+    }catch(e){bodyEl.classList.remove('streaming');bodyEl.textContent=selectedType==='teacher'?'I\\'m here to help you learn — what shall we work on?':'Hello — ready when you are.';chat.messages.push({role:'assistant',text:bodyEl.textContent,time:Date.now()});saveChats()}
     finally{isGenerating=false;updateSendState()}
   }
 };
+
 
 function renderChatList(){
   const list=document.getElementById('chatList');
   if(!chats.length){list.innerHTML='<div class="no-chats">No chats yet.</div>';return}
   list.innerHTML=chats.map(c=>{
     const date=new Date(c.updated).toLocaleDateString(undefined,{month:'short',day:'numeric'});
-    const icon=c.verity?'verity':c.type; const emoji=c.verity?'👁':(c.type==='roleplay'?'🎭':'💬');
+    const icon=c.verity?'verity':c.type; const emoji=c.verity?'👁':(c.type==='roleplay'?'🎭':(c.type==='teacher'?'📚':'💬'));
     return '<div class="chat-item '+(c.id===currentChatId?'active':'')+'" data-id="'+c.id+'"><div class="chat-icon '+icon+'">'+emoji+'</div><div class="chat-meta"><div class="chat-name">'+escapeHtml(c.name)+'</div><div class="chat-date">'+date+' · '+(c.verity?'verity':c.type)+'</div></div><button class="delete-chat" data-id="'+c.id+'">×</button></div>';
   }).join('');
   list.querySelectorAll('.chat-item').forEach(item=>item.onclick=e=>{if(e.target.closest('.delete-chat'))return;loadChat(item.dataset.id);closePanel()});
@@ -859,7 +925,8 @@ function loadChat(id){
   currentChatId=id; document.getElementById('chatTitle').textContent=chat.name;
   const badge=document.getElementById('chatTypeBadge');
   if(chat.verity){badge.textContent='Verity';badge.className='chat-type-badge verity'}
-  else{badge.textContent=chat.type==='roleplay'?'Roleplay':'Normal';badge.className='chat-type-badge '+(chat.type==='roleplay'?'roleplay':'normal')}
+  else if(chat.type==='teacher'){badge.textContent='Teacher';badge.className='chat-type-badge normal';badge.style.background='rgba(52,211,153,.15)';badge.style.color='var(--success)'}
+  else{badge.textContent=chat.type==='roleplay'?'Roleplay':'Normal';badge.className='chat-type-badge '+(chat.type==='roleplay'?'roleplay':'normal');badge.style.background='';badge.style.color=''}
   messagesEl.innerHTML='';
   if(!chat.messages.length) showEmptyState(chat.name); else chat.messages.forEach(m=>addMessageEl(m.text,m.role));
   renderChatList(); chatInput.focus();
@@ -903,7 +970,7 @@ function fillSettingsForm(){
   if(document.getElementById('setAILock')) document.getElementById('setAILock').checked=!!g.aiLock;
   if(document.getElementById('setRPTips')) document.getElementById('setRPTips').checked=!!g.rpTips;
 }
-document.getElementById('settingsBtn').onclick=()=>{fillSettingsForm();document.getElementById('settingsModal').classList.add('open')};
+document.getElementById('settingsBtn').onclick=()=>{fillSettingsForm();renderOcCollection();document.getElementById('settingsModal').classList.add('open')};
 document.getElementById('settingsClose').onclick=()=>document.getElementById('settingsModal').classList.remove('open');
 document.getElementById('tempSlider').oninput=e=>document.getElementById('tempVal').textContent=e.target.value;
 document.getElementById('tokensSlider').oninput=e=>document.getElementById('tokensVal').textContent=e.target.value;
@@ -1108,6 +1175,34 @@ async function handleTextFiles(fileList){
   }
   renderFileList();
 }
+
+function renderOcCollection(){
+  const box=document.getElementById('ocCollectionList'); if(!box) return;
+  if(!characterCollection.length){ box.innerHTML='<div style="font-size:.75rem;color:var(--text-dim)">Collection empty.</div>'; return; }
+  box.innerHTML=characterCollection.map(ch=>'<div style="display:flex;align-items:center;gap:.4rem;padding:.45rem .55rem;background:var(--bg-elevated);border:1px solid var(--border);border-radius:8px"><div style="flex:1;min-width:0"><div style="font-size:.82rem;font-weight:550">'+escapeHtml(ch.name)+' <span style="font-size:.68rem;color:var(--text-dim)">('+(ch.owner==='ai'?'AI':'You')+')</span></div><div style="font-size:.7rem;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+escapeHtml((ch.sheet||'').slice(0,80))+'</div></div><button type="button" data-id="'+ch.id+'" class="oc-del" style="background:none;border:none;color:var(--text-dim);cursor:pointer">×</button></div>').join('');
+  box.querySelectorAll('.oc-del').forEach(b=>b.onclick=()=>{ characterCollection=characterCollection.filter(x=>x.id!==b.dataset.id); saveChars(); renderOcCollection(); renderCharPickers(); });
+}
+function renderCharPickers(){
+  const u=document.getElementById('charPickerUser'), a=document.getElementById('charPickerAI');
+  if(!u||!a) return;
+  const users=characterCollection.filter(x=>x.owner==='user');
+  const ais=characterCollection.filter(x=>x.owner==='ai');
+  u.innerHTML=users.length?users.map(ch=>'<label class="check-row" style="padding:.25rem 0"><input type="radio" name="userChar" value="'+ch.id+'"/><span>'+escapeHtml(ch.name)+'</span></label>').join(''):'<div style="font-size:.75rem;color:var(--text-dim)">No user characters — add in Settings → Roleplay</div>';
+  a.innerHTML=ais.length?('<label class="check-row" style="padding:.25rem 0"><input type="radio" name="aiChar" value="" checked/><span>None</span></label>'+ais.map(ch=>'<label class="check-row" style="padding:.25rem 0"><input type="radio" name="aiChar" value="'+ch.id+'"/><span>'+escapeHtml(ch.name)+'</span></label>').join('')):'<div style="font-size:.75rem;color:var(--text-dim)">Optional AI characters</div>';
+}
+document.getElementById('addOcBtn')?.addEventListener('click',()=>{
+  const name=(document.getElementById('ocSlotName')?.value||'').trim();
+  const sheet=(document.getElementById('ocSheetBox')?.value||'').trim();
+  const owner=document.getElementById('ocOwner')?.value||'user';
+  if(!name){ alert('Give the character a unique slot name.'); return; }
+  if(!sheet){ alert('Paste the character sheet.'); return; }
+  if(characterCollection.some(x=>x.name.toLowerCase()===name.toLowerCase())){ alert('That name is already in the collection.'); return; }
+  characterCollection.push({id:'oc_'+Date.now(), name, sheet, owner});
+  saveChars(); document.getElementById('ocSlotName').value=''; document.getElementById('ocSheetBox').value='';
+  renderOcCollection(); renderCharPickers();
+});
+
+
 (function setupUploads(){
   const zone=document.getElementById('uploadZone');
   const input=document.getElementById('textFileInput');
@@ -1123,6 +1218,59 @@ async function handleTextFiles(fileList){
   renderFileList();
 })();
 
+
+
+
+document.getElementById('plusMenuBtn')?.addEventListener('click',e=>{
+  e.stopPropagation();
+  const m=document.getElementById('plusMenu');
+  m.style.display=m.style.display==='none'||!m.style.display?'block':'none';
+});
+document.addEventListener('click',()=>{ const m=document.getElementById('plusMenu'); if(m) m.style.display='none'; });
+document.getElementById('plusMenu')?.addEventListener('click',e=>e.stopPropagation());
+document.getElementById('plusThink')?.addEventListener('click',()=>{
+  thinkLonger=!thinkLonger;
+  document.getElementById('plusThink').style.outline=thinkLonger?'1px solid var(--accent)':'';
+  document.getElementById('plusMenu').style.display='none';
+  alert(thinkLonger?'Think longer ON for the next replies.':'Think longer OFF.');
+});
+document.getElementById('plusFile')?.addEventListener('click',()=>{
+  document.getElementById('plusMenu').style.display='none';
+  document.getElementById('plusFileInput').click();
+});
+document.getElementById('plusFileInput')?.addEventListener('change',async e=>{
+  const files=Array.from(e.target.files||[]);
+  for(const f of files){
+    if(f.size>500*1024){ if(!confirm(f.name+' is large ('+Math.round(f.size/1024)+' KB). Larger files use more tokens. Continue?')) continue; }
+    try{
+      const text=await f.text();
+      uploadedFiles.push({id:'f_'+Date.now()+'_'+Math.random().toString(36).slice(2,7), name:f.name, text:text.slice(0,400000), size:f.size});
+    }catch(err){ alert('Could not read '+f.name); }
+  }
+  e.target.value='';
+  renderFileList();
+  if(files.length) alert('Attached '+files.length+' file(s). Enable Files in settings if needed. Large text costs more tokens.');
+});
+document.getElementById('plusNewChat')?.addEventListener('click',()=>{ document.getElementById('plusMenu').style.display='none'; document.getElementById('newChatBtn').click(); });
+
+document.getElementById('toolExportAll')?.addEventListener('click',()=>{
+  const blob=new Blob([JSON.stringify({chats, characterCollection, exported:Date.now()},null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='grok-chats-export.json'; a.click();
+});
+document.getElementById('toolClearChats')?.addEventListener('click',()=>{
+  if(!confirm('Delete ALL chats?')) return;
+  chats=[]; currentChatId=null; saveChats(); renderChatList(); showEmptyState();
+});
+document.getElementById('toolCopySys')?.addEventListener('click',()=>{
+  const chat=chats.find(x=>x.id===currentChatId);
+  const note=chat?buildSystemNote(chat):'(no active chat)';
+  navigator.clipboard.writeText(note).then(()=>alert('System note copied.'));
+});
+document.getElementById('toolOcManager')?.addEventListener('click',()=>{
+  document.getElementById('settingsBtn').click();
+  document.querySelector('.settings-tab[data-st="roleplay"]')?.click();
+});
+document.getElementById('toolUsage')?.addEventListener('click',()=>refreshUsage?.());
 
 
 document.getElementById('exportChatBtn')?.addEventListener('click',()=>{
