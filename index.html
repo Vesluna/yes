@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
-<title>Grok</title>
+<title>Grok v2026.7.25c</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
@@ -212,7 +212,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 <div class="auth-gate" id="authGate">
   <div class="logo">✦</div>
   <h1>Grok</h1>
-  <p>Sign in with Puter to unlock chat, tools, and settings.</p>
+  <p>Sign in with Puter to unlock chat, tools, and settings.</p><p style="font-size:.72rem;color:var(--text-dim)">Build v2026.7.25c · txt uploads · export · usage</p>
   <button class="btn btn-primary" id="signInBtn" style="padding:.6rem 1.4rem;font-size:.92rem">Sign in with Puter</button>
   <div class="auth-error" id="authError">Sign-in failed. Try again.</div>
   <div class="auth-status" id="authStatus"></div>
@@ -257,7 +257,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 <button class="hamburger" id="hamburger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
 <div class="overlay" id="overlay"></div>
 <aside class="side-panel" id="sidePanel">
-<div class="panel-header"><h2>Menu</h2><button class="panel-close" id="panelClose"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+<div class="panel-header"><h2>Menu <span id="appVersion" style="font-size:.65rem;font-weight:500;color:var(--text-dim);margin-left:.35rem">v2026.7.25c</span></h2><button class="panel-close" id="panelClose"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
 <div class="panel-tabs">
 <button class="panel-tab active" data-tab="chats">Chats</button>
 <button class="panel-tab" data-tab="tools">Tools</button>
@@ -484,7 +484,7 @@ let globalSettings={
   aiSpeak:'',aiAlign:'',aiRel:'',aiKnow:'',aiBounds:'',rpTips:false,roster:'',
   memPrefs:false,memFacts:false,memFocus:'Preferences',autoSum:false,
   toolsEnable:false,toolSearch:false,toolImage:false,toolDocs:false,toolCode:false,toolAsk:true,toolAuto:false,
-  filesAllow:false,filesFolder:'',filesMention:false,filesPrefer:false,
+  filesAllow:true,filesFolder:'',filesMention:false,filesPrefer:false,
   format:'Mixed',headings:true,codeBlocks:true,tables:false,lang:'',summary:false,collapse:true,
   strict:false,noInvent:true,warnDest:false,retries:2,fallback:true,blockEmpty:true,antiDouble:true,
   shareMusic:false,greeting:true,hc:false,aiPickTrack:false
@@ -1091,9 +1091,10 @@ function renderFileList(){
   });
 }
 async function handleTextFiles(fileList){
+  // Upload always allowed; Settings → Files controls whether AI can read them
   if(!globalSettings.filesAllow){
-    alert('Enable "Allow file access" in Settings → Files first.');
-    return;
+    globalSettings.filesAllow=true; // auto-enable so first upload just works
+    try{ saveSettings(); }catch(e){}
   }
   const files=Array.from(fileList||[]);
   for(const f of files){
@@ -1111,10 +1112,7 @@ async function handleTextFiles(fileList){
   const zone=document.getElementById('uploadZone');
   const input=document.getElementById('textFileInput');
   if(!zone||!input) return;
-  zone.addEventListener('click',()=>{
-    if(!globalSettings.filesAllow){ alert('Enable "Allow file access" in Settings → Files first.'); return; }
-    input.click();
-  });
+  zone.addEventListener('click',()=>{ input.click(); });
   input.addEventListener('change',e=>{ handleTextFiles(e.target.files); e.target.value=''; });
   zone.addEventListener('dragover',e=>{ e.preventDefault(); zone.style.borderColor='var(--accent)'; });
   zone.addEventListener('dragleave',()=>{ zone.style.borderColor=''; });
