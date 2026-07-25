@@ -225,12 +225,23 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 <div class="chat-title" id="chatTitle">New conversation</div>
 </div>
 <div class="top-actions">
+<button class="icon-btn" id="exportChatBtn" title="Export chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg></button>
 <button class="icon-btn" id="settingsBtn" title="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg></button>
 <button class="new-chat-btn" id="newChatBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg> <span>New chat</span></button>
 </div>
 </div>
 <div class="messages" id="messages">
-<div class="empty-state" id="emptyState"><div class="logo">✦</div><h2>How can I help?</h2><p>Start typing or create a new chat.</p></div>
+<div class="empty-state" id="emptyState"><div class="logo">✦</div><h2>How can I help?</h2><p>Start typing or create a new chat.</p>
+<div id="quickPrompts" style="display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;margin-top:.75rem;max-width:340px">
+<button type="button" class="qp" data-q="Explain this like I'm five: ">ELI5</button>
+<button type="button" class="qp" data-q="Brainstorm 5 ideas about ">Brainstorm</button>
+<button type="button" class="qp" data-q="Summarize the following: ">Summarize</button>
+<button type="button" class="qp" data-q="Write a short roleplay opener about ">RP opener</button>
+</div></div>
+<style>
+#quickPrompts .qp{background:var(--bg-elevated);border:1px solid var(--border);color:var(--text-muted);font-family:var(--font);font-size:.72rem;padding:.35rem .6rem;border-radius:999px;cursor:pointer}
+#quickPrompts .qp:hover{border-color:var(--accent);color:var(--accent)}
+</style>
 </div>
 <div class="input-area">
 <div class="limit-banner" id="limitBanner">Usage limit reached. <span id="limitTimer"></span></div>
@@ -239,6 +250,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 <button class="send-btn" id="sendBtn" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2L15 22l-4-9-9-4 20-7z"/></svg></button>
 </div>
 <div class="input-hint">Enter send · Shift+Enter newline · Puter + Grok</div>
+<div id="usageChip" style="text-align:center;font-size:.68rem;color:var(--text-dim);margin-top:.25rem;cursor:pointer" title="Refresh usage">Usage: —</div>
 </div>
 </div>
 </div>
@@ -262,7 +274,9 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 </div>
 <p style="font-size:.75rem;color:var(--text-dim);margin-top:.6rem">Enable tools in Settings → Tools. Toggles here are quick switches.</p></div>
 <div class="tab-pane" id="tab-uploads"><h3>Uploads</h3>
-<div id="uploadZone" style="border:1.5px dashed var(--border);border-radius:var(--radius);padding:1.3rem;text-align:center;cursor:pointer;color:var(--text-muted);font-size:.82rem">📎 Drop files or click<br><span style="font-size:.72rem;color:var(--text-dim)">Chat context — enable in Settings → Files</span></div>
+<p style="font-size:.75rem;color:var(--text-dim);margin-bottom:.55rem">Text files (.txt) only for now. Enable in Settings → Files.</p>
+<div id="uploadZone" style="border:1.5px dashed var(--border);border-radius:var(--radius);padding:1.3rem;text-align:center;cursor:pointer;color:var(--text-muted);font-size:.82rem">📎 Drop .txt files or click<br><span style="font-size:.72rem;color:var(--text-dim)">Max ~200KB per file · used as chat context</span></div>
+<input type="file" id="textFileInput" accept=".txt,text/plain" multiple hidden/>
 <div id="fileList" style="margin-top:.6rem;font-size:.8rem;color:var(--text-muted)"></div>
 </div>
 <div class="tab-pane" id="tab-music"><h3>Music</h3>
@@ -476,6 +490,7 @@ let globalSettings={
   shareMusic:false,greeting:true,hc:false,aiPickTrack:false
 };
 let localTracks=[], localIndex=-1, localPlaying=false, currentTrackName='', spotifyContext='', loopMode=0, shuffleOn=false;
+let uploadedFiles=[]; // {name, text, size, id}
 const localAudio=document.getElementById('localAudio');
 function storageGet(k,f){try{const v=localStorage.getItem(k);return v?JSON.parse(v):f}catch(e){return f}}
 function storageSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
@@ -571,7 +586,16 @@ function buildSystemNote(chat){
     const tools=[]; if(g.toolSearch)tools.push('search'); if(g.toolImage)tools.push('image'); if(g.toolDocs)tools.push('docs'); if(g.toolCode)tools.push('code');
     if(tools.length) p.push('Tools available (conceptual): '+tools.join(', ')+'.'+(g.toolAsk?' Ask before use.':'')+(g.toolAuto?' Auto-use when obvious.':''));
   }
-  if(g.filesAllow) p.push('File access allowed.'+(g.filesMention?' Only @mentioned files.':'')+(g.filesFolder?' Prefer folder: '+g.filesFolder+'.':''));
+  if(g.filesAllow){
+    p.push('File access allowed.'+(g.filesMention?' Only use files the user @mentions by filename.':' Include uploaded file contents when relevant.')+(g.filesFolder?' Prefer folder label: '+g.filesFolder+'.':''));
+    if(uploadedFiles.length){
+      const mentionOnly=g.filesMention;
+      uploadedFiles.forEach(f=>{
+        if(mentionOnly) p.push('Available file (mention @'+f.name+' to use): '+f.name);
+        else p.push('UPLOADED FILE "'+f.name+'":\n'+f.text.slice(0,12000)+(f.text.length>12000?'\n…[truncated]':''));
+      });
+    }
+  }
   if(g.shareMusic){ const trackInfo=spotifyContext||currentTrackName; if(trackInfo) p.push('User is currently listening via music player: '+trackInfo+'. Match vibe subtly if relevant.'); }
   if(g.aiPickTrack&&localTracks.length&&!document.getElementById('music-spotify').classList.contains('active')){
     p.push('You may suggest a local track by exact filename from: '+localTracks.map(t=>t.name).slice(0,30).join(', ')+'.');
@@ -671,8 +695,8 @@ async function maybeRunTools(userText){
     const m=userText.match(/`([^`]+)`/)||userText.match(/calculate\\s+(.+)/i);
     if(m) results.push('CODE TOOL:\n'+await runCodeExec(m[1]));
   }
-  if(g.toolDocs && g.filesAllow){
-    results.push('DOCS: File context is enabled. Use any uploaded file names the user mentions.');
+  if(g.toolDocs && g.filesAllow && uploadedFiles.length){
+    results.push('UPLOADED TEXT FILES:\n'+uploadedFiles.map(f=>'--- '+f.name+' ---\n'+f.text.slice(0,8000)).join('\n\n'));
   }
   return results.length?results.join('\\n\\n'):null;
 }
@@ -841,7 +865,7 @@ function loadChat(id){
   renderChatList(); chatInput.focus();
 }
 function showEmptyState(name){
-  messagesEl.innerHTML='<div class="empty-state" id="emptyState"><div class="logo">✦</div><h2>'+(name?escapeHtml(name):'How can I help?')+'</h2><p>Start typing below.</p></div>';
+  messagesEl.innerHTML='<div class="empty-state" id="emptyState"><div class="logo">✦</div><h2>'+(name?escapeHtml(name):'How can I help?')+'</h2><p>Start typing below.</p><div id="quickPrompts" style="display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;margin-top:.75rem;max-width:340px"><button type="button" class="qp" data-q="Explain this like I\'m five: ">ELI5</button><button type="button" class="qp" data-q="Brainstorm 5 ideas about ">Brainstorm</button><button type="button" class="qp" data-q="Summarize the following: ">Summarize</button><button type="button" class="qp" data-q="Write a short roleplay opener about ">RP opener</button></div></div>';
   if(!name){document.getElementById('chatTitle').textContent='New conversation';document.getElementById('chatTypeBadge').textContent='Normal';document.getElementById('chatTypeBadge').className='chat-type-badge normal'}
 }
 
@@ -1052,7 +1076,90 @@ localAudio.addEventListener('ended',()=>{
   else {localPlaying=false;updateLocalUI();renderLocalTracks()}
 });
 document.getElementById('localProgress').onclick=e=>{if(!localAudio.duration)return;const r=e.currentTarget.getBoundingClientRect();localAudio.currentTime=((e.clientX-r.left)/r.width)*localAudio.duration};
-document.getElementById('uploadZone').onclick=()=>alert(globalSettings.filesAllow?'File picker wiring next — enable files in Settings.':'Enable file access in Settings → Files first.');
+
+function renderFileList(){
+  const list=document.getElementById('fileList');
+  if(!list) return;
+  if(!uploadedFiles.length){
+    list.innerHTML='<div style="color:var(--text-dim);font-size:.78rem;padding:.4rem 0">No text files uploaded yet.</div>';
+    return;
+  }
+  list.innerHTML=uploadedFiles.map(f=>'<div style="display:flex;align-items:center;gap:.45rem;padding:.45rem .55rem;background:var(--bg-elevated);border:1px solid var(--border);border-radius:8px;margin-bottom:.3rem"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">📄 '+escapeHtml(f.name)+' <span style="color:var(--text-dim);font-size:.7rem">('+(f.size/1024).toFixed(1)+' KB)</span></span><button data-id="'+f.id+'" class="file-rm" style="background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:.95rem" title="Remove">×</button></div>').join('');
+  list.querySelectorAll('.file-rm').forEach(btn=>btn.onclick=()=>{
+    uploadedFiles=uploadedFiles.filter(x=>x.id!==btn.dataset.id);
+    renderFileList();
+  });
+}
+async function handleTextFiles(fileList){
+  if(!globalSettings.filesAllow){
+    alert('Enable "Allow file access" in Settings → Files first.');
+    return;
+  }
+  const files=Array.from(fileList||[]);
+  for(const f of files){
+    const isTxt=/\.txt$/i.test(f.name)||f.type==='text/plain'||f.type==='';
+    if(!isTxt){ alert(f.name+' skipped — only .txt files for now.'); continue; }
+    if(f.size>200*1024){ alert(f.name+' is too large (max 200KB).'); continue; }
+    try{
+      const text=await f.text();
+      uploadedFiles.push({id:'f_'+Date.now()+'_'+Math.random().toString(36).slice(2,7), name:f.name, text:text.slice(0,150000), size:f.size});
+    }catch(e){ alert('Failed to read '+f.name); }
+  }
+  renderFileList();
+}
+(function setupUploads(){
+  const zone=document.getElementById('uploadZone');
+  const input=document.getElementById('textFileInput');
+  if(!zone||!input) return;
+  zone.addEventListener('click',()=>{
+    if(!globalSettings.filesAllow){ alert('Enable "Allow file access" in Settings → Files first.'); return; }
+    input.click();
+  });
+  input.addEventListener('change',e=>{ handleTextFiles(e.target.files); e.target.value=''; });
+  zone.addEventListener('dragover',e=>{ e.preventDefault(); zone.style.borderColor='var(--accent)'; });
+  zone.addEventListener('dragleave',()=>{ zone.style.borderColor=''; });
+  zone.addEventListener('drop',e=>{
+    e.preventDefault(); zone.style.borderColor='';
+    handleTextFiles(e.dataTransfer.files);
+  });
+  renderFileList();
+})();
+
+
+
+document.getElementById('exportChatBtn')?.addEventListener('click',()=>{
+  const chat=chats.find(c=>c.id===currentChatId);
+  if(!chat||!chat.messages.length){ alert('No messages to export.'); return; }
+  const lines=chat.messages.map(m=>(m.role==='user'?'You: ':'Grok: ')+m.text).join('\n\n');
+  const blob=new Blob(['# '+chat.name+'\n\n'+lines],{type:'text/plain'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=(chat.name||'chat').replace(/[^\w\-]+/g,'_')+'.txt'; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+});
+async function refreshUsage(){
+  const chip=document.getElementById('usageChip'); if(!chip) return;
+  try{
+    if(typeof puter==='undefined'||!puter.auth||!puter.auth.getMonthlyUsage){ chip.textContent='Usage: sign in to track'; return; }
+    const u=await puter.auth.getMonthlyUsage();
+    const a=u?.allowanceInfo||{};
+    const rem=a.remaining, tot=a.monthUsageAllowance;
+    if(rem!=null&&tot!=null&&tot>0){
+      const pct=Math.max(0,Math.min(100,(rem/tot)*100));
+      const dollars=(rem/1e8).toFixed(4); // microcents → rough $
+      chip.textContent='Allowance left: ~'+pct.toFixed(0)+'% · remaining units '+rem;
+      if(rem<=0){ usageLocked=true; document.getElementById('limitBanner').classList.add('show'); document.getElementById('limitBanner').innerHTML='Monthly allowance exhausted. Resets with your Puter billing cycle. <a href="https://puter.com/dashboard#billing" target="_blank" style="color:var(--accent)">Billing</a>'; document.getElementById('inputBox').classList.add('locked'); updateSendState(); }
+      else if(usageLocked&&rem>0){ usageLocked=false; document.getElementById('limitBanner').classList.remove('show'); document.getElementById('inputBox').classList.remove('locked'); updateSendState(); }
+    } else chip.textContent='Usage: available';
+  }catch(e){ chip.textContent='Usage: —'; }
+}
+document.getElementById('usageChip')?.addEventListener('click',refreshUsage);
+document.addEventListener('click',e=>{
+  const qp=e.target.closest('.qp'); if(!qp) return;
+  const q=qp.dataset.q||'';
+  chatInput.value=q; chatInput.focus(); updateSendState();
+  chatInput.style.height='auto'; chatInput.style.height=Math.min(chatInput.scrollHeight,130)+'px';
+});
+setTimeout(refreshUsage,2500);
+setInterval(refreshUsage,120000);
 
 loadState(); if(globalSettings.hc) document.body.classList.add('hc');
 renderChatList(); syncToolBadges();
