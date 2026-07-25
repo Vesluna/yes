@@ -495,6 +495,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 <script>
 
 (function(){
+function safeOn(id, ev, fn){ const el=document.getElementById(id); if(el) el.addEventListener(ev, fn); return el; }
 const VERITY_CODE='STILLWATERS';
 let chats=[], currentChatId=null, selectedType='normal', ageVerified=false, isGenerating=false, lastSendAt=0;
 let usageLocked=false, signedIn=false, limitUntil=0;
@@ -636,7 +637,7 @@ function buildSystemNote(chat){
   if(g.aiPickTrack&&localTracks.length) p.push('You may suggest a local track by exact filename from: '+localTracks.map(t=>t.name).slice(0,30).join(', ')+'.');
   if(g.memPrefs){
     p.push('Remember Other Chats is ON. You may consult JSON summaries of other chats when the user references them.');
-    p.push('EXCEPTION: Teacher-mode chats are sealed. If the user asks about Teacher content outside a Teacher chat, reply that teaching material cannot be brought up here (e.g. "I\\'m sorry, but since what you\\'re referencing is for teaching, I can\\'t bring that up here.").');
+    p.push("EXCEPTION: Teacher-mode chats are sealed. If the user asks about Teacher content outside a Teacher chat, refuse politely (example: Sorry, teaching material cannot be brought up here).");
     const summaries=chats.filter(x=>x.id!==chat.id&&x.type!=='teacher').slice(0,12).map(x=>({
       id:x.id, name:x.name, type:x.type,
       updated:x.updated,
@@ -897,7 +898,7 @@ document.getElementById('createChatBtn').onclick=async()=>{
       for await(const part of response){const ch=part?.text??'';if(ch){fullText+=ch;bodyEl.textContent=fullText;messagesEl.scrollTop=messagesEl.scrollHeight}}
       bodyEl.classList.remove('streaming'); bodyEl.textContent=fullText||'Hello.';
       chat.messages.push({role:'assistant',text:fullText||'Hello.',time:Date.now()}); saveChats();
-    }catch(e){bodyEl.classList.remove('streaming');bodyEl.textContent=selectedType==='teacher'?'I\\'m here to help you learn — what shall we work on?':'Hello — ready when you are.';chat.messages.push({role:'assistant',text:bodyEl.textContent,time:Date.now()});saveChats()}
+    }catch(e){bodyEl.classList.remove('streaming');bodyEl.textContent=selectedType==='teacher'?"I am here to help you learn — what shall we work on?":"Hello — ready when you are.";chat.messages.push({role:'assistant',text:bodyEl.textContent,time:Date.now()});saveChats()}
     finally{isGenerating=false;updateSendState()}
   }
 };
@@ -1029,17 +1030,17 @@ document.getElementById('settingsSave').onclick=()=>{
   document.body.classList.toggle('hc',g.hc); saveSettings(); syncToolBadges();
   document.getElementById('settingsModal').classList.remove('open');
 };
-document.getElementById('clearMemBtn').onclick=()=>{if(confirm('Clear memory vault notes?')){verityVault=[];saveVault();alert('Cleared')}};
-document.getElementById('saveProfileBtn').onclick=()=>{
-  const n=document.getElementById('profileSlotName').value.trim(); if(!n) return alert('Name the slot');
+const _cmb=document.getElementById('clearMemBtn'); if(_cmb) _cmb.onclick=()=>{if(confirm('Clear memory vault notes?')){verityVault=[];saveVault();alert('Cleared')}};
+document.getElementById('saveProfileBtn')?.addEventListener('click',()=>{
+  const n=document.getElementById('profileSlotName')?.value.trim(); if(!n) return alert('Name the slot');
   profiles[n]={userOC:globalSettings.userOC,aiOC:globalSettings.aiOC,roster:globalSettings.roster,aiLock:globalSettings.aiLock};
   saveProfiles(); alert('Saved profile: '+n);
-};
-document.getElementById('loadProfileBtn').onclick=()=>{
-  const n=document.getElementById('profileSlotName').value.trim(); if(!n||!profiles[n]) return alert('No such profile');
+});
+document.getElementById('loadProfileBtn')?.addEventListener('click',()=>{
+  const n=document.getElementById('profileSlotName')?.value.trim(); if(!n||!profiles[n]) return alert('No such profile');
   Object.assign(globalSettings,profiles[n]); fillSettingsForm(); saveSettings(); alert('Loaded '+n);
-};
-document.getElementById('regenPersonaBtn').onclick=async()=>{
+});
+document.getElementById('regenPersonaBtn')?.addEventListener('click',async()=>{
   if(!confirm('Regenerate persona with AI?')) return;
   try{
     const r=await puter.ai.chat('Create a short AI assistant persona: give Name on first line, then 2-3 sentences of voice/traits/style.',{model:globalSettings.model,max_tokens:200});
@@ -1047,15 +1048,15 @@ document.getElementById('regenPersonaBtn').onclick=async()=>{
     globalSettings.personaName=(lines[0]||'Grok').replace(/^name:\s*/i,'').trim();
     globalSettings.personaDesc=lines.slice(1).join(' ').trim(); saveSettings(); fillSettingsForm();
   }catch(e){alert('Failed: '+e.message)}
-};
-document.getElementById('regenAICharBtn').onclick=async()=>{
+});
+document.getElementById('regenAICharBtn')?.addEventListener('click',async()=>{
   if(!confirm('Regenerate AI character with AI?')) return;
   try{
     const r=await puter.ai.chat('Create a roleplay character: Name, species, 2 sentences personality, 1 sentence bounds (never do).',{model:globalSettings.model,max_tokens:250});
     const t=(r.message?.content||r||'').toString(); globalSettings.aiDesc=t; const m=t.match(/^([^\n,]+)/); if(m) globalSettings.aiChar=m[1].trim();
     saveSettings(); fillSettingsForm();
   }catch(e){alert('Failed: '+e.message)}
-};
+});
 
 function syncToolBadges(){
   document.querySelectorAll('.tool-item').forEach(el=>{
@@ -1066,7 +1067,7 @@ function syncToolBadges(){
     const b=el.querySelector('.badge'); if(b) b.textContent=(on&&globalSettings.toolsEnable)?'on':'off';
   });
 }
-document.getElementById('toolList').onclick=e=>{
+document.getElementById('toolList')?.addEventListener('click',e=>{
   const item=e.target.closest('.tool-item'); if(!item) return;
   const t=item.dataset.tool;
   if(t==='search') globalSettings.toolSearch=!globalSettings.toolSearch;
@@ -1075,7 +1076,7 @@ document.getElementById('toolList').onclick=e=>{
   if(t==='code') globalSettings.toolCode=!globalSettings.toolCode;
   if(!globalSettings.toolsEnable) globalSettings.toolsEnable=true;
   saveSettings(); syncToolBadges();
-};
+});
 
 // Music
 document.querySelectorAll('.music-subtab').forEach(btn=>btn.onclick=()=>{
